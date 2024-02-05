@@ -21,9 +21,13 @@ class DashboardController extends Controller
             // Get total messages and total chat time for all time
             $totalMessages = $userStat->messages()->count();
 
-            $firstMessage = $userStat->messages->min('created_at');
-            $lastMessage = $userStat->messages->max('created_at');
-            $totalChatTime = $firstMessage->diffInMinutes($lastMessage);
+            if ($totalMessages > 0) {
+                $firstMessage = $userStat->messages->min('created_at');
+                $lastMessage = $userStat->messages->max('created_at');
+                $totalChatTime = $firstMessage->diffInMinutes($lastMessage);
+            } else {
+                $totalChatTime = 0;
+            }
 
 
             // Calculate total messages and total chat time for the latest month
@@ -40,9 +44,13 @@ class DashboardController extends Controller
                 ->where('created_at', '>=', Carbon::now()->startOfMonth())
                 ->get();
 
-            $firstMessageLatestMonth = $messagesLatestMonth->min('created_at');
-            $lastMessageLatestMonth = $messagesLatestMonth->max('created_at');
-            $totalChatTimeLatestMonth = $firstMessageLatestMonth->diffInMinutes($lastMessageLatestMonth);
+            if ($messagesLatestMonth->count() > 0) {
+                $firstMessageLatestMonth = $messagesLatestMonth->min('created_at');
+                $lastMessageLatestMonth = $messagesLatestMonth->max('created_at');
+                $totalChatTimeLatestMonth = $firstMessageLatestMonth->diffInMinutes($lastMessageLatestMonth);
+            } else {
+                $totalChatTimeLatestMonth = 0;
+            }
 
             // Calculate total messages by weeks for the latest month
             $totalMessagesByWeeks = $userStat->messages()
